@@ -23,19 +23,14 @@ def save_to_json(data: List[Dict[str, Any]], output_file: str) -> None:
 
 
 def main(org: str, flow: str, output_file: str = None, from_ts: int = None, to_ts: int = None):
-    api_key = os.environ.get('KOSLI_API_KEY')
+    api_key = os.environ.get('KOSLI_API_KEY', None)
     kosli_host = os.environ.get('KOSLI_HOST', "https://app.kosli.com")
     base_url = f"{kosli_host}/api/v2/attestations/{org}/{flow}"
     params = { 'from_timestamp': from_ts, 'to_timestamp': to_ts }
     try:
         # Fetch all data
-        with Progress(
-                BarColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                transient=True,
-        ) as progress:
-            progress.add_task(description="Loading data...", total=None)
-            all_data = fetch_paginated_data(base_url, params=params, api_key=api_key)
+        with Progress() as progress:
+            all_data = fetch_paginated_data(base_url, params=params, api_key=api_key, progress=progress)
 
         # Save to file
         if output_file:
