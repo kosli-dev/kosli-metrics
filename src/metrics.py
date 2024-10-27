@@ -1,22 +1,23 @@
-import os
-
-import numpy as np
-import typer
-
-import requests
 import json
 from typing import List, Dict, Any, Annotated
-from rich.progress import Progress, TextColumn, BarColumn
-from rich.table import Table
-from rich.console import Console
+
+import numpy as np
 import pandas as pd
+import requests
+import typer
+from rich.console import Console
+from rich.progress import Progress
+from rich.table import Table
 
 from fetch import fetch_paginated_data
 
 app = typer.Typer(no_args_is_help=True)
 
-parse_app = typer.Typer()
+parse_app = typer.Typer(no_args_is_help=True)
 app.add_typer(parse_app, name="parse")
+
+stats_app = typer.Typer(no_args_is_help=True)
+app.add_typer(stats_app, name="stats")
 
 
 BECAME_NON_COMPLIANT = 'became-non-compliant'
@@ -125,6 +126,17 @@ def create_data_frame(data):
     df['event'] = df.apply(lambda x: LOOKUP[(x['prev_is_compliant'], x['is_compliant'])], axis=1)
     return df
 
+@stats_app.command()
+def file(
+        data_file: str,
+):
+    data = json.load(open(data_file))['data']
+    df = create_data_frame(data)
+    print(f"Date range:")
+    print(f"  From: {df["created_at"].min()}")
+    print(f"  From: {df["created_at"].max()}")
+    print()
+    print(f"There were #{len(df[df["event"] == BECAME_NON_COMPLIANT])} BECAME_NON_COMPLIANT events")
 
 @app.command()
 def download(
