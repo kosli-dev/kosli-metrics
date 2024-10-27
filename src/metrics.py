@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.progress import Progress
 from rich.table import Table
 
-from fetch import fetch_paginated_data
+from .fetch import fetch_paginated_data
 
 app = typer.Typer(no_args_is_help=True)
 
