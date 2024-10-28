@@ -142,11 +142,11 @@ def file(
 def download(
         org: Annotated[str, typer.Option()],
         flow: Annotated[str, typer.Option()],
+        output_file: str,
         from_ts: int = None,
         to_ts: int = None,
         api_key: Annotated[str, typer.Option(envvar="KOSLI_API_KEY")] = None,
         kosli_host: Annotated[str, typer.Option(envvar="KOSLI_HOST")] = "https://app.kosli.com",
-        output_file: str = None
 ) -> None:
     try:
         # Fetch all data
@@ -159,11 +159,8 @@ def download(
             )
 
         # Save to file
-        if output_file:
-            save_to_json(all_data, output_file)
-            print(f"Successfully saved {len(all_data)} records to {output_file}")
-        else:
-            print(f"Successfully read {len(all_data)} records from API")
+        save_to_json(all_data, output_file)
+        print(f"Successfully saved {len(all_data)} records to {output_file}")
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data: {e}")
